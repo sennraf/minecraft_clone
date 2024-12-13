@@ -12,7 +12,7 @@ import {hack_defs}  from './hack-defs.js';
 import {ui_controller} from './ui-controller.js';
 import {defs} from './defs.js';
 
-// test
+
 class LessCrappyMinecraftAttempt {
   constructor() {
     this._Initialize();
