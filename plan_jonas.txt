@@ -1,1 +1,4 @@
-meine npc idee:...
+my npc idea:
+-builds dirthouses.
+-builds stairs to too high cliffs
+-get's you food
