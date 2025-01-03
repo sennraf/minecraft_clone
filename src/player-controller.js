@@ -58,6 +58,22 @@ export const player_controller = (() => {
       document.addEventListener('keydown', (e) => this.OnKeyDown_(e), false);
       document.addEventListener('keyup', (e) => this.OnKeyUp_(e), false);
       // document.addEventListener('mouseup', (e) => this._onMouseUp(e), false);
+
+      // 1) Create a pivot object to offset our camera upward.
+      this.cameraPivot_ = new THREE.Object3D();
+      // Choose how high you want the camera to sit above the hitbox:
+      this.cameraPivot_.position.set(0, 1.5, 0);
+
+      // 2) Add the new pivot to the controls object (which handles collisions).
+      this.controls_.getObject().add(this.cameraPivot_);
+
+      // 3) Move your actual camera into the pivot instead of the controls object directly.
+      //    If PointerLockControls attaches the camera for you, detach the camera first:
+      //    this.controls_.dispose(); // If needed, re-instantiate or reattach below
+      this.cameraPivot_.add(this.camera_);
+
+      // That’s it! The collision checks remain with this.controls_.getObject().position,
+      // but the rendered camera sits slightly higher inside cameraPivot_.
     }
 
     OnKeyDown_(event) {
@@ -358,11 +374,6 @@ export const player_controller = (() => {
         controlObject.position.y = 250;
         this.standing = true;
       }
-
-      // Increase this value to raise the camera position
-      const cameraHeight = 3.0; // Default was likely around 1.5-2.0
-      this.camera_.position.copy(controlObject.position);
-      this.camera_.position.y += cameraHeight;
 
       this.Parent.SetPosition(controlObject.position);
       this.Parent.SetQuaternion(controlObject.quaternion);
