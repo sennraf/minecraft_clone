@@ -22,7 +22,7 @@ export const player_controller = (() => {
     }
 
     InitEntity() {
-      this.radius_ = 1.5;
+      this.radius_ = 0.4;
       this.keys_ = {
         forward: false,
         backward: false,
@@ -35,7 +35,7 @@ export const player_controller = (() => {
       this.acceleration_ = new THREE.Vector3(75, 20, 75);
 
       // this.decceleration_ = new THREE.Vector3(-10, -9.8 * 2, -10);
-      this.acceleration_ = new THREE.Vector3(200, 25, 200);
+      this.acceleration_ = new THREE.Vector3(100, 20, 100);
 
       const threejs = this.FindEntity('renderer').GetComponent('ThreeJSController');
       this.element_ = threejs.threejs_.domElement;
@@ -197,10 +197,27 @@ export const player_controller = (() => {
     }
 
     _FindIntersections(boxes, position) {
-      const sphere = new THREE.Sphere(position, this.radius_);
+      // Create a vertical cylinder check by using two circles at top and bottom
+      const height = 1.8; // Typical player height
+      const bottomPos = new THREE.Vector3(position.x, position.y - height/2, position.z);
+      const topPos = new THREE.Vector3(position.x, position.y + height/2, position.z);
 
       const intersections = boxes.filter(b => {
-        return sphere.intersectsBox(b);
+        // Check if the vertical line segment of the cylinder is within the box's XZ bounds
+        const horizontalIntersects = (
+          position.x + this.radius_ >= b.min.x &&
+          position.x - this.radius_ <= b.max.x &&
+          position.z + this.radius_ >= b.min.z &&
+          position.z - this.radius_ <= b.max.z
+        );
+
+        // Check if the cylinder's height overlaps with the box's height
+        const verticalIntersects = (
+          topPos.y >= b.min.y &&
+          bottomPos.y <= b.max.y
+        );
+
+        return horizontalIntersects && verticalIntersects;
       });
 
       return intersections;
